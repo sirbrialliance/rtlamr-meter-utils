@@ -1,0 +1,11 @@
+{
+  "name": "meter-reader",
+  "version": "0.0.1",
+  "description": "Reads rtlamr data and stores it in an SQLite DB",
+  "main": "run.js",
+  "author": "sirbrialliance",
+  "license": "BSD-2-Clause",
+  "dependencies": {
+    "sqlite3": "^3.1.8"
+  }
+}
