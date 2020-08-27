@@ -2,6 +2,8 @@ const child_process = require('child_process');
 
 var sqlite3 = require('sqlite3').verbose();
 
+var config = require("./config");
+
 
 var db = new sqlite3.Database('meterData.sqlite');
 
@@ -16,9 +18,12 @@ db.serialize(function() {
 console.log("Starting SDR...");
 
 var tcpProc = child_process.exec("rtl_tcp", {
-	cwd: rtlPath,
+	cwd: config.rtlPath || "",
 });
 
+tcpProc.on('error', (error) => {
+	throw error;
+});
 tcpProc.stdout.on('data', (data) => {
 	console.log("RTL: ", data);
 });
@@ -28,9 +33,16 @@ tcpProc.stderr.on('data', (data) => {
 
 console.log("Starting amr");
 
-var amrProc = child_process.exec("rtlamr", {
 
-	cwd: rtlPath,
+
+var amrProc = child_process.exec((config.amrPath + "/" || "") + "rtlamr", {
+	//cwd: config.amrPath || ""
+}, (a, b, err) => {
+	if (err) throw err;
+});
+
+amrProc.on('error', (error) => {
+	throw error;
 });
 
 amrProc.stdout.on('data', (data) => {
@@ -48,6 +60,8 @@ amrProc.stderr.on('data', (data) => {
 });
 
 console.log("started");
+
+
 
 function handleData(line) {
 	// {Time:2017-03-24T14:41:38.637 SCM:{ID:12345678 Type: 7 Tamper:{Phy:00 Enc:00} Consumption: 1234567 CRC:0x1234}}
@@ -73,8 +87,22 @@ function handleData(line) {
 }
 
 
+function stayAlive() {
+	setTimeout(stayAlive, 1000);
+}
+stayAlive();
+
 function finishIt() {
-	db.close();
+	// if (tcpProc) {
+	// 	tcpProc.kill();
+	// }
+	// if (amrProc) {
+	// 	amrProc.kill();
+	// }
+	if (db) {
+		db.close();
+		db = null;
+	}
 }
 
 process.on('exit', finishIt.bind(null, {cleanup:true}));
