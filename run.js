@@ -31,35 +31,37 @@ tcpProc.stderr.on('data', (data) => {
 	console.log("RTL-> ", data);
 });
 
-console.log("Starting amr");
+
+setTimeout(() => {
+	console.log("Starting amr");
 
 
+	var amrProc = child_process.exec((config.amrPath + "/" || "") + "rtlamr", {
+		//cwd: config.amrPath || ""
+	}, (a, b, err) => {
+		if (err) throw err;
+	});
 
-var amrProc = child_process.exec((config.amrPath + "/" || "") + "rtlamr", {
-	//cwd: config.amrPath || ""
-}, (a, b, err) => {
-	if (err) throw err;
-});
+	amrProc.on('error', (error) => {
+		throw error;
+	});
 
-amrProc.on('error', (error) => {
-	throw error;
-});
+	amrProc.stdout.on('data', (data) => {
+		data = data.toString();
+		var parts = data.trim().split("\n");
+		for (var i = 0; i < parts.length; i++) {
+			let part = parts[i].trim();
+			if (!part) continue;
+			handleData(part);
+		}
+	});
 
-amrProc.stdout.on('data', (data) => {
-	data = data.toString();
-	var parts = data.trim().split("\n");
-	for (var i = 0; i < parts.length; i++) {
-		let part = parts[i].trim();
-		if (!part) continue;
-		handleData(part);
-	}
-});
+	amrProc.stderr.on('data', (data) => {
+		console.log("AMR-> ", data);
+	});
 
-amrProc.stderr.on('data', (data) => {
-	console.log("AMR-> ", data);
-});
-
-console.log("started");
+	console.log("started");
+}, 1000);
 
 
 

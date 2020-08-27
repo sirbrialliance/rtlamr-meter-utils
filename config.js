@@ -1,4 +1,4 @@
 module.exports = {
 	rtlPath: '',
-	amrPath: '../golang/bin',
+	amrPath: '/home/jstephens/go/bin',
 };
