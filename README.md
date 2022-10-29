@@ -4,6 +4,8 @@ sudo yum install nodejs npm go git rtl-sdr supervisor
 
 #make sure you can successfully run rtl_test
 
+
+
 git clone https://github.com/sirbrialliance/rtlamr-meter-utils
 go get github.com/bemasher/rtlamr
 
@@ -23,3 +25,8 @@ user=jstephens
 ABC
 
 service supervisor reload
+
+
+Test with:
+rsync -ravz ~/path/PowerData/ host:/path/PowerData/ --exclude=.git "--exclude=*.sqlit*" && ssh host "cd /path/PowerData/ && node run.js"
+
